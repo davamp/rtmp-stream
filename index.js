@@ -2,7 +2,7 @@ const NodeMediaServer = require("node-media-server");
 const ffmpegPath = require('ffmpeg-static');
 const fs = require('fs');
 
-fs.rmdirSync('./media', { recursive: true, force: true });
+// fs.rmdirSync('./media', { recursive: true, force: true });
 
 const httpConfig = {
   port: 8000,
@@ -33,11 +33,40 @@ const transformationConfig = {
   ],
   MediaRoot: "./media",
 };
+const fissionConfig = {
+  ffmpeg: ffmpegPath,
+  tasks: [
+    {
+      rule: "live/*",
+      model: [
+        {
+          ab: "128k",
+          vb: "1500k",
+          vs: "1280x720",
+          vf: "30"
+        },
+        {
+          ab: "96k",
+          vb: "1000k",
+          vs: "854x480",
+          vf: "30"
+        },
+        {
+          ab: "96k",
+          vb: "600k",
+          vs: "640x360",
+          vf: "30"
+        }
+      ]
+    }
+  ]
+}
 
 const config = {
   http: httpConfig,
   rtmp: rtmpConfig,
   trans: transformationConfig,
+  fission: fissionConfig
 };
 
 const nms = new NodeMediaServer(config);
